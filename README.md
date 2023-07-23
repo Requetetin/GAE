@@ -1,2 +1,11 @@
-## Build with cmake
-cmake -S . -B build
+# Running
+`./run.sh`
+
+# Clearing build folder
+`./clean.sh`
+
+# Run cmake
+`./configure.sh`
+
+# Compile
+`./build.sh`
