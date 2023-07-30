@@ -138,10 +138,10 @@ void Game::update() {
     }
   }
   if (ball.y <= 0) {
-    sy *= -1;
+    sy *= -1.1;
   }
   if (ball.y + ball.h >= height) {
-    sy *= -1;
+    sy *= -1.1;
   }
 
   ball.x += sx;
