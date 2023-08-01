@@ -22,6 +22,7 @@ add_executable(
 target_include_directories(
   ${PROJECT_NAME}
   PRIVATE ${PROJECT_SOURCE_DIR}/include
+  PUBLIC ${PROJECT_SOURCE_DIR}/src
 )
 
 target_link_libraries(

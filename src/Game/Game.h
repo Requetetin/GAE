@@ -1,11 +1,13 @@
 #pragma once
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
-#include <gl/GL.h>
-#include <string>
+#include <memory>
+#include "Scene/Scene.h"
 
 class Game {
   public:
+    int width;
+    int height;
     // Constructor
     Game(const char* name, int width, int height);
     // Destructor
@@ -25,9 +27,10 @@ class Game {
 
     void run();
 
+    void setScene(std::unique_ptr<Scene> newScene);
+    Scene* getCurrentScene() const;
+
   private:
-    int width;
-    int height;
     bool isRunning;
 
     SDL_Window* window;
@@ -44,4 +47,6 @@ class Game {
 
     int scoreLeft;
     int scoreRight;
+
+    std::unique_ptr<Scene> currentScene;
 };

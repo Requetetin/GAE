@@ -9,9 +9,9 @@ struct NameComponent {
 struct TransformComponent {
   glm::vec2 position;
   glm::vec2 scale;
-  float rotation;
+  double rotation;
 };
 
-struct MovementComponent {
+struct SpeedComponent {
   glm::vec2 velocity;
 };

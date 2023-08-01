@@ -1,9 +1,7 @@
-#include <iostream>
-#include <print.h>
-#include <Game.h>
+#include "Pong/Pong.h"
 
 int main(int argc, char* args[]) {
-  Game pong = Game("pong", 1020, 600);
+  Pong pong = Pong();
 
   pong.run();
   return 0;
