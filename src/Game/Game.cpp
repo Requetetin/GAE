@@ -21,8 +21,8 @@ Game::Game(const char* title, int width, int height)
   SDL_SetRenderDrawColor(renderer, 200, 255, 255, 1);
   print("Game Start!");
 
-  width = width;
-  height = height;
+  screen_width = width;
+  screen_height = height;
 
   isRunning = true;
 

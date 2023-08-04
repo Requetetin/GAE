@@ -23,7 +23,7 @@ std::unique_ptr<Scene> Pong::createGameplayScene()
     ball.addComponent<SizeComponent>(30, 30);
     ball.addComponent<ColliderComponent>(false);
 
-    Entity paddle = gameplayScene->createEntity("paddle", (width/2)-50, height-20);
+    Entity paddle = gameplayScene->createEntity("paddle", (screen_width/2)-50, screen_height-20);
     paddle.addComponent<SpeedComponent>(glm::vec2(0, 0));
     paddle.addComponent<SizeComponent>(100, 20);
     paddle.addComponent<PlayerComponent>(200);

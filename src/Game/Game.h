@@ -6,8 +6,6 @@
 
 class Game {
   public:
-    int width;
-    int height;
     // Constructor
     Game(const char* name, int width, int height);
     // Destructor
@@ -30,8 +28,10 @@ class Game {
     void setScene(std::unique_ptr<Scene> newScene);
     Scene* getCurrentScene() const;
 
-  private:
+  protected:
     bool isRunning;
+    int screen_width;
+    int screen_height;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -44,9 +44,6 @@ class Game {
     int frameCount;
     Uint32 lastFPSUpdateTime;
     float FPS;
-
-    int scoreLeft;
-    int scoreRight;
 
     std::unique_ptr<Scene> currentScene;
 };
