@@ -1,6 +1,8 @@
-#include <iostream>
+#include "Pong/Pong.h"
 
 int main(int argc, char* args[]) {
-  std::cout << "HELLO\n";
+  Pong pong = Pong();
+
+  pong.run();
   return 0;
 }

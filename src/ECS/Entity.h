@@ -7,14 +7,14 @@
 class Entity {
   public:
     Entity(entt::entity e, Scene* s) {
-      print("Entity Created");
+      // print("Entity Created");
 
       handle = e;
       scene = s;
     }
 
     ~Entity() {
-      print("Entity Destroyed");
+      // print("Entity Destroyed");
     }
 
     template<typename T>
