@@ -33,3 +33,24 @@ class BounceUpdateSystem : public UpdateSystem {
   public:
     void run(double dT);
 };
+
+class SpriteSetupSystem : public SetupSystem {
+  public:
+    SpriteSetupSystem(SDL_Renderer* renderer);
+    ~SpriteSetupSystem();
+
+    void run() override;
+
+  private:
+    SDL_Renderer* renderer;
+};
+
+class SpriteUpdateSystem : public UpdateSystem {
+  public:
+    void run(double dT) override;
+};
+
+class SpriteRenderSystem : public RenderSystem {
+  public:
+    void run(SDL_Renderer* renderer) override;
+};

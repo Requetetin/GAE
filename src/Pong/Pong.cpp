@@ -1,43 +1,51 @@
-#include "print.h"
+#include <print.h>
 #include "Pong.h"
 #include "Systems.h"
 #include "Components.h"
+
 #include "ECS/Entity.h"
 
 Pong::Pong() : Game("Pong", SCREEN_WIDTH, SCREEN_HEIGHT) {
-    std::unique_ptr<Scene> gameplayScene = createGameplayScene();
-    setScene(std::move(gameplayScene));
+  Scene* gameplayScene = createGameplayScene();
+  setScene(gameplayScene);
 }
 
 Pong::~Pong() {
     // destructor implementation
 }
 
-std::unique_ptr<Scene> Pong::createGameplayScene()
+Scene* Pong::createGameplayScene()
 {
-    // Create a unique_ptr to hold the created scene
-    std::unique_ptr<Scene> gameplayScene = std::make_unique<Scene>("Gameplay");
+  Scene* scene = new Scene("GAMEPLAY SCENE");
 
-    Entity ball = gameplayScene->createEntity("ball", screen_width / 2, screen_height / 2);
-    ball.addComponent<SpeedComponent>(glm::vec2(200, 200));
-    ball.addComponent<SizeComponent>(30, 30);
-    ball.addComponent<ColliderComponent>(false);
+  Entity white = scene->createEntity("cat1", 0, 0);
+  auto& s = white.addComponent<SpriteComponent>(
+    "Sprites/MainChar/SpriteSheet.png",
+    0, 0,
+    16,
+    5,
+    1000
+  );
+  s.lastUpdate = SDL_GetTicks();
 
-    Entity left = gameplayScene->createEntity("left", 10, (screen_height / 2) + 50);
-    left.addComponent<SpeedComponent>(glm::vec2(0, 0));
-    left.addComponent<SizeComponent>(10, 100);
-    left.addComponent<PlayerComponent>(200);
+  Entity black = scene->createEntity("cat2", 20, 0);
+  black.addComponent<SpriteComponent>(
+    "Sprites/MainChar/SpriteSheet.png", 
+    0, 0,
+    16,
+    5,
+    1000,
+    PixelShader{
+      [](Uint32 color) -> Uint32 { return (color == 0xF3F2C0FF) ? 0xD2B48CFF : color ; },
+      "red"
+    },
+    SDL_GetTicks()
+  );
 
-    Entity right = gameplayScene->createEntity("right", screen_width - 10, (screen_height / 2) + 50);
-    right.addComponent<SpeedComponent>(glm::vec2(0, 0));
-    right.addComponent<SizeComponent>(10, 100);
-    right.addComponent<PlayerComponent>(200);
+  scene->addSetupSystem<SpriteSetupSystem>(renderer);
+  scene->addRenderSystem<SpriteRenderSystem>();
+  scene->addUpdateSystem<SpriteUpdateSystem>();
 
-    gameplayScene->addRenderSystem<RectRenderSystem>();
-    gameplayScene->addUpdateSystem<MovementUpdateSystem>(SCREEN_WIDTH, SCREEN_HEIGHT);
-    gameplayScene->addEventSystem<PlayerInputEventSystem>();
-    gameplayScene->addUpdateSystem<CollisionDetectionUpdateSystem>();
-    gameplayScene->addUpdateSystem<BounceUpdateSystem>();
-
-    return gameplayScene;
+  return scene;
 }
+

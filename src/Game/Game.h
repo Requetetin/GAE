@@ -25,7 +25,7 @@ class Game {
 
     void run();
 
-    void setScene(std::unique_ptr<Scene> newScene);
+    void setScene(Scene* newScene);
     Scene* getCurrentScene() const;
 
   protected:
@@ -45,5 +45,5 @@ class Game {
     Uint32 lastFPSUpdateTime;
     float FPS;
 
-    std::unique_ptr<Scene> currentScene;
+    Scene* currentScene;
 };

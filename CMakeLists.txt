@@ -13,6 +13,8 @@ file(
   "${PROJECT_SOURCE_DIR}/src/*.cpp"
 )
 
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+
 add_executable(
   ${PROJECT_NAME}
   src/main.cpp
@@ -29,4 +31,5 @@ target_link_libraries(
   ${PROJECT_NAME}
   SDL2
   SDL2main
+  SDL2_image
 )
