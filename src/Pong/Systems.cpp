@@ -23,11 +23,10 @@ MovementUpdateSystem::MovementUpdateSystem(int screen_width, int screen_height)
   : screen_width(screen_width), screen_height(screen_height) { }
 
 void MovementUpdateSystem::run(double dT) {
-  const auto view = scene->r.view<TransformComponent, SpeedComponent, NameComponent>();
+  const auto view = scene->r.view<TransformComponent, SpeedComponent>();
   for (const entt::entity e : view) {
     TransformComponent& t = view.get<TransformComponent>(e);
     SpeedComponent& m = view.get<SpeedComponent>(e);
-    NameComponent& n = view.get<NameComponent>(e);
 
     if (m.velocity.x == 0 && m.velocity.y == 0) {
       continue;
@@ -35,27 +34,20 @@ void MovementUpdateSystem::run(double dT) {
 
     if (t.position.x <= 0)
     {
-      // Gol izquierdo
-      if (n.name == "ball") {
-        print("RIGHT WINS");
-        exit(0);
-      }
+      m.velocity.x *= -1;
     }
-    if (t.position.x >= screen_width - 10)
+    if (t.position.x >= screen_width - 20)
     {
-      // Gol derecho
-      if (n.name == "ball") {
-        print("LEFT WINS");
-        exit(0);
-      }
+      m.velocity.x *= -1;
     }
     if (t.position.y <= 0)
     {
-      m.velocity.y *= -1.1;
+      m.velocity.y *= -1;
     }
     if (t.position.y > screen_height - 20)
     {
-      m.velocity.y *= -1.1;
+      print("You lose.");
+      exit(1);
     }
   
     t.position.x += m.velocity.x * dT;
@@ -64,36 +56,22 @@ void MovementUpdateSystem::run(double dT) {
 }
 
 void PlayerInputEventSystem::run(SDL_Event event) {
-  scene->r.view<NameComponent, PlayerComponent, SpeedComponent>().each(
-    [&](const auto& entity, NameComponent& name, PlayerComponent& player, SpeedComponent& speed) {
+  scene->r.view<PlayerComponent, SpeedComponent>().each(
+    [&](const auto& entity, PlayerComponent& player, SpeedComponent& speed) {
       if (event.type == SDL_KEYDOWN)
       {
         switch (event.key.keysym.sym) {
-          case SDLK_DOWN:
-            if (name.name == "right") {
-              speed.velocity.y = player.moveSpeed;
-            }
+          case SDLK_LEFT:
+            speed.velocity.x = -player.moveSpeed;
             break;
-          case SDLK_UP:
-            if (name.name == "right") {
-              speed.velocity.y = -player.moveSpeed;
-            }
-            break;
-          case SDLK_w:
-            if (name.name == "left") {
-              speed.velocity.y = -player.moveSpeed;
-            }
-            break;
-          case SDLK_s:
-            if (name.name == "left") {
-              speed.velocity.y = player.moveSpeed;
-            }
+          case SDLK_RIGHT:
+            speed.velocity.x = player.moveSpeed;
             break;
         }
       }
       if (event.type == SDL_KEYUP)
       {
-        speed.velocity.y = 0;
+        speed.velocity.x = 0;
       }
     }
   );
@@ -130,7 +108,7 @@ void BounceUpdateSystem::run(double dT) {
     view.each([&](auto e, ColliderComponent& c, SpeedComponent& s) {
       if (c.triggered) {
         c.triggered = false;
-        s.velocity.x *= -1.1;
+        s.velocity.y *= -1.2;
       }
     });
 }
