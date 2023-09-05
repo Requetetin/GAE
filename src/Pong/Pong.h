@@ -1,8 +1,9 @@
 #pragma once
 #include "Game/Game.h"
 
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 720;
+// 64 * 36 tiles
+const int SCREEN_WIDTH = 1024;
+const int SCREEN_HEIGHT = 576;
 
 class Pong : public Game {
   public:

@@ -31,8 +31,12 @@ struct SpriteComponent {
 };
 
 struct TilemapComponent {
-  std::vector<Texture*> map;
   int width;
   int height;
   int tileSize;
+};
+
+struct TileComponent {
+  Texture* texture;
+  int index;
 };

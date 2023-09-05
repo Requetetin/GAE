@@ -1,3 +1,6 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include "print.h"
 #include "Systems.h"
 #include "Components.h"
@@ -91,45 +94,63 @@ void TilemapSetupSystem::run() {
     Texture* grassTexture = TextureManager::LoadTexture("Tilesets/Grass_Tileset.png", renderer);
     Texture* playerTexture = TextureManager::LoadTexture("Sprites/MainChar/SpriteSheet.png", renderer);
     auto& tilemap = scene->world->get<TilemapComponent>();
-    tilemap.width = 50;
-    tilemap.height = 38;
+    tilemap.width = 64;
+    tilemap.height = 36;
     tilemap.tileSize = 16;
 
     std::vector<int> tmap;
+    std::string line;
+    std::string word;
+    std::ifstream Level1("Tilesets/Levels/1/Screens/1/1-1.txt");
+    while (std::getline (Level1, line)) {
+        std::stringstream ss(line);
+        while (ss >> word) {
+            std::cout << word << std::endl;
+            tmap.push_back(stoi(word));
+        }
+        exit(1);
+    }
 
     for (int y = 0; y < tilemap.height; y++) {
         for (int x = 0; x < tilemap.width; x++) {
-            float factor = y * y - x / x;
+            Entity tile = scene->createEntity(
+                "TILE",
+                x * tilemap.tileSize,
+                y * tilemap.tileSize
+            );
 
-            if (factor > 1) {
-                tmap.push_back(0);
-            } else {
-                tmap.push_back(1);
-            }
+            tile.addComponent<TileComponent>(grassTexture, tmap[y * tilemap.width + x]);
         }
-    }
-
-    for (int i = 0; i < tilemap.height * tilemap.width; i++) {
-        tilemap.map.push_back((tmap[i] == 0) ? grassTexture : playerTexture);
     }
 }
 
 void TilemapRenderSystem::run(SDL_Renderer* renderer) {
     auto& tilemap = scene->world->get<TilemapComponent>();
+    auto view = scene->r.view<TileComponent, TransformComponent>();
 
-    for (int y=0; y < tilemap.height; y++) {
-        for (int x = 0; x < tilemap.width; x++) {
-            Texture* texture = tilemap.map[y * tilemap.width + x];
+    int size = 16;
 
-            int size = tilemap.tileSize * 5;
+    for (auto e : view) {
+        const auto transform = view.get<TransformComponent>(e);
+        const auto tile = view.get<TileComponent>(e);
+        const auto pos = transform.position;
+        const auto index = tile.index;
+        // const int xIndex = index % 7;
+        // const int yIndex = index / 7;
+        
+        // SDL_Rect clip = {
+        //     xIndex * 16,
+        //     yIndex * 16,
+        //     16,
+        //     16
+        // };
 
-            texture->render(
-                x * size,
-                y * size,
-                size,
-                size
-            );
-        }
+        tile.texture->render(
+            pos.x * size,
+            pos.y * size,
+            16,
+            16
+        );
     }
 }
 
