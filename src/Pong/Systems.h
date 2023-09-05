@@ -54,3 +54,18 @@ class SpriteRenderSystem : public RenderSystem {
   public:
     void run(SDL_Renderer* renderer) override;
 };
+
+class TilemapSetupSystem : public SetupSystem {
+  public:
+    TilemapSetupSystem(SDL_Renderer* renderer);
+    ~TilemapSetupSystem();
+    void run();
+
+  private:
+    SDL_Renderer* renderer;
+};
+
+class TilemapRenderSystem : public RenderSystem {
+  public:
+    void run(SDL_Renderer* renderer);
+};
