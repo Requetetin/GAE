@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include "print.h"
 #include "Systems.h"
 #include "Components.h"
@@ -101,15 +102,14 @@ void TilemapSetupSystem::run() {
     std::vector<int> tmap;
     std::string line;
     std::string word;
-    std::ifstream Level1("Tilesets/Levels/1/Screens/1/1-1.txt");
+    std::ifstream Level1("assets/Tilesets/Levels/1/Screens/1/1-1.txt");
     while (std::getline (Level1, line)) {
         std::stringstream ss(line);
         while (ss >> word) {
-            std::cout << word << std::endl;
             tmap.push_back(stoi(word));
         }
-        exit(1);
     }
+    Level1.close();
 
     for (int y = 0; y < tilemap.height; y++) {
         for (int x = 0; x < tilemap.width; x++) {
@@ -135,21 +135,22 @@ void TilemapRenderSystem::run(SDL_Renderer* renderer) {
         const auto tile = view.get<TileComponent>(e);
         const auto pos = transform.position;
         const auto index = tile.index;
-        // const int xIndex = index % 7;
-        // const int yIndex = index / 7;
+        const int xIndex = index % 7;
+        const int yIndex = index / 7;
         
-        // SDL_Rect clip = {
-        //     xIndex * 16,
-        //     yIndex * 16,
-        //     16,
-        //     16
-        // };
+        SDL_Rect clip = {
+            xIndex * 16,
+            yIndex * 16,
+            16,
+            16
+        };
 
         tile.texture->render(
             pos.x * size,
             pos.y * size,
             16,
-            16
+            16,
+            &clip
         );
     }
 }
