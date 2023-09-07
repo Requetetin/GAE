@@ -47,13 +47,13 @@ void SpriteRenderSystem::run(SDL_Renderer* renderer) {
             spriteComponent.size
         };
 
-        int scale = 5;
+        int scale = 2;
 
         texture->render(
             transformComponent.position.x * scale,
             transformComponent.position.y * scale,
-            48 * scale,
-            48 * scale,
+            16 * scale,
+            16 * scale,
             &clip
         );
     }

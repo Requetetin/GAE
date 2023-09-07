@@ -18,7 +18,7 @@ Scene* Pong::createGameplayScene()
 {
   Scene* scene = new Scene("GAMEPLAY SCENE");
 
-  Entity white = scene->createEntity("cat1", 0, 0);
+  Entity white = scene->createEntity("cat1", 3*16, 9*16);
   auto& s = white.addComponent<SpriteComponent>(
     "Sprites/MainChar/SpriteSheet.png",
     0, 0,
