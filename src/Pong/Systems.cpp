@@ -146,8 +146,8 @@ void TilemapRenderSystem::run(SDL_Renderer* renderer) {
         };
 
         tile.texture->render(
-            pos.x * size,
-            pos.y * size,
+            pos.x,
+            pos.y,
             16,
             16,
             &clip
