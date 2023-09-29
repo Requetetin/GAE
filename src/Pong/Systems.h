@@ -69,3 +69,24 @@ class TilemapRenderSystem : public RenderSystem {
   public:
     void run(SDL_Renderer* renderer) override;
 };
+
+class BackgroundSetupSystem : public SetupSystem {
+  public:
+    BackgroundSetupSystem(SDL_Renderer* renderer);
+    ~BackgroundSetupSystem();
+
+    void run() override;
+
+  private:
+    SDL_Renderer* renderer;
+};
+
+class BackgroundUpdateSystem : public UpdateSystem {
+  public:
+    void run(double dT) override;
+};
+
+class BackgroundRenderSystem : public RenderSystem {
+  public:
+    void run(SDL_Renderer* renderer) override;
+};

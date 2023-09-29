@@ -155,3 +155,71 @@ void TilemapRenderSystem::run(SDL_Renderer* renderer) {
     }
 }
 
+BackgroundSetupSystem::BackgroundSetupSystem(SDL_Renderer* renderer)
+    : renderer(renderer) { }
+
+BackgroundSetupSystem::~BackgroundSetupSystem() {
+    auto view = scene->r.view<BackgroundComponent>();
+
+    for(auto entity : view) {
+        const auto backgroundComponent = view.get<BackgroundComponent>(entity);
+        TextureManager::UnloadTexture(backgroundComponent.name);
+    }
+}
+
+void BackgroundSetupSystem::run() {
+    auto view = scene->r.view<BackgroundComponent>();
+
+    for(auto entity : view) {
+        const auto backgroundComponent = view.get<BackgroundComponent>(entity);
+        TextureManager::LoadTexture(backgroundComponent.name, renderer);
+    }
+}
+
+void BackgroundRenderSystem::run(SDL_Renderer* renderer) {
+    auto view = scene->r.view<TransformComponent, BackgroundComponent>();
+
+    for(auto entity : view) {
+        const auto backgroundComponent = view.get<BackgroundComponent>(entity);
+        const auto transformComponent = view.get<TransformComponent>(entity);
+  
+        Texture* texture = TextureManager::GetTexture(backgroundComponent.name);
+  
+        SDL_Rect clip = {
+            backgroundComponent.xIndex * backgroundComponent.width,
+            1,
+            backgroundComponent.width,
+            backgroundComponent.height
+        };
+
+        texture->render(
+            0, 0, 1024, 576, &clip
+        );
+    }
+}
+
+void BackgroundUpdateSystem::run(double dT) {
+    auto view = scene->r.view<BackgroundComponent>();
+
+    Uint32 now = SDL_GetTicks();
+
+    for(auto entity : view) {
+        auto& backgroundComponent = view.get<BackgroundComponent>(entity);
+
+        if (backgroundComponent.animationFrames > 0) {
+            float timeSinceLastUpdate = now - backgroundComponent.lastUpdate;
+
+            int framesToUpdate = static_cast<int>(
+                timeSinceLastUpdate / 
+                backgroundComponent.animationDuration * backgroundComponent.animationFrames
+            );
+
+            if (framesToUpdate > 0) {
+                backgroundComponent.xIndex += framesToUpdate;
+                backgroundComponent.xIndex %= backgroundComponent.animationFrames;
+                backgroundComponent.lastUpdate = now;            
+            }
+        }
+    }
+}
+

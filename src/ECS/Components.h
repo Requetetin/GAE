@@ -40,3 +40,13 @@ struct TileComponent {
   Texture* texture;
   int index;
 };
+
+struct BackgroundComponent {
+  std::string name;
+  int width = 1024;
+  int height = 576;
+  int xIndex = 0;
+  int animationFrames = 0;
+  int animationDuration = 0;
+  Uint32 lastUpdate = 0;
+};
