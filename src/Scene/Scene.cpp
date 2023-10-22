@@ -15,6 +15,7 @@ Scene::Scene(const std::string& name)
 
     world = new Entity(r.create(), this);
     world->addComponent<TilemapComponent>();
+    player = nullptr;
   }
 
 Scene::~Scene() {

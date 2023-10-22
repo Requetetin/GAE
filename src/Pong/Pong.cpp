@@ -38,6 +38,8 @@ Scene* Pong::createGameplayScene()
   );
   bg.lastUpdate = SDL_GetTicks();
 
+  scene->addSetupSystem<PhysicsSetupSystem>(renderer);
+
   scene->addSetupSystem<BackgroundSetupSystem>(renderer);
   scene->addRenderSystem<BackgroundRenderSystem>();
   scene->addUpdateSystem<BackgroundUpdateSystem>();

@@ -1,22 +1,12 @@
 #pragma once
 
 #include <iostream>
+#include <constants.h>
 #include "ECS/System.h"
 
 class RectRenderSystem : public RenderSystem {
   public:
     void run(SDL_Renderer* renderer) override;
-};
-
-class MovementUpdateSystem : public UpdateSystem {
-  public:
-    MovementUpdateSystem(int screen_width, int screen_height);
-
-    void run(double dT) override;
-
-  private:
-    int screen_width;
-    int screen_height;
 };
 
 class PlayerInputEventSystem : public EventSystem {
@@ -89,4 +79,45 @@ class BackgroundUpdateSystem : public UpdateSystem {
 class BackgroundRenderSystem : public RenderSystem {
   public:
     void run(SDL_Renderer* renderer) override;
+};
+
+class PhysicsSetupSystem : public SetupSystem {
+  public:
+    PhysicsSetupSystem(SDL_Renderer* renderer);
+    ~PhysicsSetupSystem();
+
+    void run() override;
+
+  private:
+    SDL_Renderer* renderer;
+};
+
+class PhysicsUpdateSystem : public UpdateSystem {
+  public:
+    void run(double dT) override;
+};
+
+class MovementUpdateSystem : public UpdateSystem {
+public:
+    void run(double dT) override;
+};
+
+class FixtureRenderSystem : public RenderSystem {
+  public:
+    void run(SDL_Renderer* renderer) override;
+};
+
+class MovementInputSystem : public EventSystem {
+  public:
+    void run(SDL_Event event);
+
+private:
+  float hForceMagnitude = 1000.0f * PIXELS_PER_METER;
+  float vForceMagnitude = 10000.0f * PIXELS_PER_METER;
+
+  void moveCharacter(int direction);
+
+  void stopCharacter(int direction);
+
+  void jumpCharacter();
 };
