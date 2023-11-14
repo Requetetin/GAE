@@ -285,22 +285,25 @@ void PhysicsUpdateSystem::run(double dT) {
 };
 
 void MovementUpdateSystem::run(double dT) {
-    const auto view = scene->r.view<RigidBodyComponent, TransformComponent, SizeComponent>();
+    const auto view = scene->r.view<RigidBodyComponent, TransformComponent, NameComponent>();
 
     for (const auto e : view) {
-      const auto rb = view.get<RigidBodyComponent>(e);
-      auto& transform = view.get<TransformComponent>(e);
-      auto& size = view.get<SizeComponent>(e);
+        const auto rb = view.get<RigidBodyComponent>(e);
+        auto& transform = view.get<TransformComponent>(e);
+        auto& name = view.get<NameComponent>(e);
       
-      b2Vec2 position = rb.body->GetPosition(); // x, y meters
+        if (name.tag == "PLAYER") {
+            b2Vec2 position = rb.body->GetPosition(); // x, y meters
 
-      // Convert the Box2D position (center of the body) to screen coordinates
-      float centerX = position.x * SCALE / PIXELS_PER_METER; // 20 pixels * 8 pixels / 10 meters  
-      float centerY = position.y * SCALE / PIXELS_PER_METER;
+            // Convert the Box2D position (center of the body) to screen coordinates
+            float centerX = position.x * SCALE / (PIXELS_PER_METER * 2) + 8;
+            float centerY = position.y * SCALE / (PIXELS_PER_METER * 2) + 8;
+            // 112, 304 -> 56, 152
 
-      // Adjust for the entity's dimensions to get the top-left corner
-      transform.x = centerX - static_cast<float>(size.w)/2.0f;
-      transform.y = centerY - static_cast<float>(size.h)/2.0f;
+            // Adjust for the entity's dimensions to get the top-left corner
+            transform.x = (centerX - static_cast<float>(transform.w)/2.0f);
+            transform.y = (centerY - static_cast<float>(transform.h)/2.0f);
+        }
     }
 };
 
@@ -411,7 +414,7 @@ void CharacterSetupSystem::run() {
     scene->player = new Entity(scene->r.create(), scene);
     scene->player->addComponent<NameComponent>("PLAYER");
 
-    auto transform = scene->player->addComponent<TransformComponent>(3*16, 9*16, 16, 16);
+    auto transform = scene->player->addComponent<TransformComponent>(3*16 * SCALE, 9*16 * SCALE, 16 * SCALE, 16 * SCALE);
     scene->player->addComponent<SpriteComponent>(
         "Sprites/MainChar/SpriteSheet.png",
         16, 16,
