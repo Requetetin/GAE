@@ -14,9 +14,12 @@ struct SizeComponent
   int h;
 };
 
-struct ColliderComponent
-{
-  bool triggered;
+struct ColliderComponent {
+  int xo;
+  int yo;
+  int w;
+  int h;
+  SDL_Color color = {255, 255, 255};
 };
 
 struct PlayerComponent

@@ -121,3 +121,8 @@ private:
 
   void jumpCharacter();
 };
+
+class CharacterSetupSystem : public SetupSystem {
+public:
+  void run();
+};

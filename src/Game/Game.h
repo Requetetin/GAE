@@ -28,6 +28,8 @@ class Game {
     void setScene(Scene* newScene);
     Scene* getCurrentScene() const;
 
+    entt::registry r;
+
   protected:
     bool isRunning;
     int screen_width;
@@ -46,4 +48,32 @@ class Game {
     float FPS;
 
     Scene* currentScene;
+
+    template<typename T>
+    void addSetupSystem(Scene* scene, auto&&... args) {
+        auto system = std::make_shared<T>(std::forward<decltype(args)>(args)...);
+        system->setScene(scene);
+        scene->setupSystems.push_back(system);
+    }
+
+    template<typename T>
+    void addEventSystem(Scene* scene, auto&&... args) {
+        auto system = std::make_shared<T>(std::forward<decltype(args)>(args)...);
+        system->setScene(scene);
+        scene->eventSystems.push_back(system);
+    }
+
+    template<typename T>
+    void addUpdateSystem(Scene* scene, auto&&... args) {
+        auto system = std::make_shared<T>(std::forward<decltype(args)>(args)...);
+        system->setScene(scene);
+        scene->updateSystems.push_back(system);
+    }
+
+    template<typename T>
+    void addRenderSystem(Scene* scene, auto&&... args) {
+        auto system = std::make_shared<T>(std::forward<decltype(args)>(args)...);
+        system->setScene(scene);
+        scene->renderSystems.push_back(system);
+    }
 };

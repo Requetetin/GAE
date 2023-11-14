@@ -47,17 +47,17 @@ void SpriteRenderSystem::run(SDL_Renderer* renderer) {
         Texture* texture = TextureManager::GetTexture(spriteComponent.name, spriteComponent.shader.name);
   
         SDL_Rect clip = {
-            spriteComponent.xIndex * spriteComponent.size,
-            spriteComponent.yIndex * spriteComponent.size,
-            spriteComponent.size,
-            spriteComponent.size
+            spriteComponent.xIndex * spriteComponent.w,
+            spriteComponent.yIndex * spriteComponent.h,
+            spriteComponent.w,
+            spriteComponent.h
         };
 
         int scale = 2;
 
         texture->render(
-            transformComponent.position.x * scale,
-            transformComponent.position.y * scale,
+            transformComponent.x * scale,
+            transformComponent.y * scale,
             16 * scale,
             16 * scale,
             &clip
@@ -119,15 +119,47 @@ void TilemapSetupSystem::run() {
 
     for (int y = 0; y < tilemap.height; y++) {
         for (int x = 0; x < tilemap.width; x++) {
-            Entity tile = scene->createEntity(
+            Entity* tile = scene->createEntity(
                 "TILE",
                 x * tilemap.tileSize,
                 y * tilemap.tileSize
             );
+            auto world = scene->world->get<PhysicsComponent>().b2d;
 
-            tile.addComponent<TileComponent>(grassTexture, tmap[y * tilemap.width + x]);
+            tile->addComponent<TileComponent>(grassTexture, tmap[y * tilemap.width + x]);
+            const auto index = tmap[y * tilemap.width + x];
+            if (index != 0) {
+                b2BodyDef bodyDef;
+                bodyDef.type = b2_staticBody;
+                bodyDef.position.Set(x * 16, y * 16);
+
+                b2Body* body = world->CreateBody(&bodyDef);
+
+                b2PolygonShape box;
+                box.SetAsBox(16, 16);
+
+                b2FixtureDef fixtureDef;
+                fixtureDef.shape = &box;
+                fixtureDef.density = 0.0000001f;
+                fixtureDef.friction = 0.0f;
+
+                body->CreateFixture(&fixtureDef);
+
+                body->GetUserData().pointer = reinterpret_cast<uintptr_t>(scene->player);
+
+                tile->addComponent<RigidBodyComponent>(
+                    bodyDef.type,
+                    body,
+                    x * 16,
+                    y * 16,
+                    16,
+                    16,
+                    SDL_Color{0, 255, 0}
+                );
+            }
         }
     }
+    exit(1);
 }
 
 void TilemapRenderSystem::run(SDL_Renderer* renderer) {
@@ -139,7 +171,8 @@ void TilemapRenderSystem::run(SDL_Renderer* renderer) {
     for (auto e : view) {
         const auto transform = view.get<TransformComponent>(e);
         const auto tile = view.get<TileComponent>(e);
-        const auto pos = transform.position;
+        const auto x = transform.x;
+        const auto y = transform.y;
         const auto index = tile.index;
         const int xIndex = index % 7;
         const int yIndex = index / 7;
@@ -152,8 +185,8 @@ void TilemapRenderSystem::run(SDL_Renderer* renderer) {
         };
 
         tile.texture->render(
-            pos.x,
-            pos.y,
+            x,
+            y,
             16,
             16,
             &clip
@@ -267,8 +300,8 @@ void MovementUpdateSystem::run(double dT) {
       float centerY = position.y * SCALE / PIXELS_PER_METER;
 
       // Adjust for the entity's dimensions to get the top-left corner
-      transform.position.x = centerX - static_cast<float>(size.w)/2.0f;
-      transform.position.y = centerY - static_cast<float>(size.h)/2.0f;
+      transform.x = centerX - static_cast<float>(size.w)/2.0f;
+      transform.y = centerY - static_cast<float>(size.h)/2.0f;
     }
 };
 
@@ -376,4 +409,52 @@ void MovementInputSystem::stopCharacter(int direction) {
 void MovementInputSystem::jumpCharacter() {
     const auto playerBody = scene->player->get<RigidBodyComponent>().body;
     playerBody->ApplyLinearImpulseToCenter(b2Vec2(0, -vForceMagnitude), true);
+}
+
+void CharacterSetupSystem::run() {
+    scene->player = new Entity(scene->r.create(), scene);
+    scene->player->addComponent<NameComponent>("PLAYER");
+
+    auto transform = scene->player->addComponent<TransformComponent>(3*16, 9*16, 16, 16);
+    scene->player->addComponent<SpriteComponent>(
+        "Sprites/MainChar/SpriteSheet.png",
+        16, 16,
+        0, 0,
+        5, 1000
+    );
+
+    auto world = scene->world->get<PhysicsComponent>().b2d;
+
+    float x = 48 * PIXELS_PER_METER; 
+    float y = 144 * PIXELS_PER_METER; 
+    float hx = (16.0f * PIXELS_PER_METER) / 2.0f;
+    float hy = (16.0f * PIXELS_PER_METER) / 2.0f;
+
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position.Set(x + hx, y + hy);
+
+    b2Body* body = world->CreateBody(&bodyDef);
+
+    b2PolygonShape box;
+    box.SetAsBox(hx, hy);
+
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &box;
+    fixtureDef.density = 0.0000001f;
+    fixtureDef.friction = 0.0f;
+
+    body->CreateFixture(&fixtureDef);
+
+    body->GetUserData().pointer = reinterpret_cast<uintptr_t>(scene->player);
+
+    scene->player->addComponent<RigidBodyComponent>(
+        bodyDef.type,
+        body,
+        transform.x,
+        transform.y,
+        transform.w,
+        transform.h,
+        SDL_Color{0, 255, 0}
+    );
 }

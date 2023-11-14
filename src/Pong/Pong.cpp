@@ -1,4 +1,6 @@
 #include <print.h>
+#include <constants.h>
+
 #include "Pong.h"
 #include "Systems.h"
 #include "Components.h"
@@ -16,20 +18,10 @@ Pong::~Pong() {
 
 Scene* Pong::createGameplayScene()
 {
-  Scene* scene = new Scene("GAMEPLAY SCENE");
+  Scene* scene = new Scene("GAMEPLAY SCENE", r);
 
-  Entity white = scene->createEntity("cat1", 3*16, 9*16);
-  auto& s = white.addComponent<SpriteComponent>(
-    "Sprites/MainChar/SpriteSheet.png",
-    0, 0,
-    16,
-    5,
-    1000
-  );
-  s.lastUpdate = SDL_GetTicks();
-
-  Entity background = scene->createEntity("bg", 0, 0);
-  auto& bg = background.addComponent<BackgroundComponent>(
+  Entity* background = scene->createEntity("bg", 0, 0);
+  auto& bg = background->addComponent<BackgroundComponent>(
     "Sprites/Backgrounds/Summer/Summer_Background.png",
     1024, 576,
     0,
@@ -38,18 +30,24 @@ Scene* Pong::createGameplayScene()
   );
   bg.lastUpdate = SDL_GetTicks();
 
-  scene->addSetupSystem<PhysicsSetupSystem>(renderer);
+  addSetupSystem<PhysicsSetupSystem>(scene, renderer);
+  addSetupSystem<CharacterSetupSystem>(scene);
+  addSetupSystem<BackgroundSetupSystem>(scene, renderer);
 
-  scene->addSetupSystem<BackgroundSetupSystem>(renderer);
-  scene->addRenderSystem<BackgroundRenderSystem>();
-  scene->addUpdateSystem<BackgroundUpdateSystem>();
+  addUpdateSystem<PhysicsUpdateSystem>(scene);
+  addUpdateSystem<MovementUpdateSystem>(scene);
+  addEventSystem<MovementInputSystem>(scene);
 
-  scene->addSetupSystem<TilemapSetupSystem>(renderer);
-  scene->addRenderSystem<TilemapRenderSystem>();
+  addRenderSystem<BackgroundRenderSystem>(scene);
+  addUpdateSystem<BackgroundUpdateSystem>(scene);
 
-  scene->addSetupSystem<SpriteSetupSystem>(renderer);
-  scene->addRenderSystem<SpriteRenderSystem>();
-  scene->addUpdateSystem<SpriteUpdateSystem>();
+  addSetupSystem<TilemapSetupSystem>(scene, renderer);
+  addRenderSystem<TilemapRenderSystem>(scene);
+
+  addSetupSystem<SpriteSetupSystem>(scene, renderer);
+  addRenderSystem<SpriteRenderSystem>(scene);
+  addUpdateSystem<SpriteUpdateSystem>(scene);
+  addRenderSystem<FixtureRenderSystem>(scene);
 
 
   return scene;

@@ -5,13 +5,14 @@
 #include "Game/Graphics/Texture.h"
 
 struct NameComponent {
-  std::string name;
+  std::string tag;
 };
 
 struct TransformComponent {
-  glm::ivec2 position;
-  glm::vec2 scale;
-  double rotation;
+  int x;
+  int y;
+  int w;
+  int h;
 };
 
 struct SpeedComponent {
@@ -20,14 +21,16 @@ struct SpeedComponent {
 
 struct SpriteComponent {
   std::string name;
+  int w = -1;
+  int h = -1;
   int xIndex = 0;
   int yIndex = 0;
-  int size = 16;
   int animationFrames = 0;
   int animationDuration = 0;
   PixelShader shader = { nullptr, "" };
-  
   Uint32 lastUpdate = 0;
+  bool once = false;
+  Uint32 delay = 0;
 };
 
 struct TilemapComponent {

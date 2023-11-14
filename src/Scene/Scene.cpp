@@ -1,5 +1,4 @@
 #include <string>
-#include <glm/glm.hpp>
 #include <SDL2/SDL.h>
 #include <print.h>
 
@@ -9,31 +8,36 @@
 #include "ECS/Components.h"
 #include "ECS/System.h"
 
-Scene::Scene(const std::string& name)
-: name(name) {
-    // print("Scene ", name, " constructed!");
 
-    world = new Entity(r.create(), this);
-    world->addComponent<TilemapComponent>();
-    player = nullptr;
-  }
-
-Scene::~Scene() {
-  // print("Scene destruyed!");
+Scene::Scene(const std::string& name, entt::registry& r)
+  : name(name), r(r)
+{
+  world = nullptr;
+  mainCamera = nullptr;
+  player = nullptr;
 }
 
-Entity Scene::createEntity(const std::string& name, int x, int y) {
-  Entity entity = {r.create(), this};
-  entity.addComponent<NameComponent>(name);
-  entity.addComponent<TransformComponent>(glm::vec2(x, y), glm::vec2(1, 1), 0.0d);
+Scene::~Scene()
+{
+  print("Scene Destroyed!");
+}
+
+Entity* Scene::createEntity(const std::string& name, int x, int y)
+{
+  /* print("Create entity", name); */
+  Entity* entity = new Entity(r.create(), this );
+  entity->addComponent<NameComponent>(name);
+  entity->addComponent<TransformComponent>(x, y);
 
   return entity;
 }
 
-void Scene::setup() {
-  // print("Scene setup");
-
-  for (auto sys: setupSystems) {
+void Scene::setup()
+{
+  print("Scene Setup", name);
+  
+  for (auto sys: setupSystems)
+  {
     sys->run();
   }
 }
@@ -48,18 +52,23 @@ void Scene::update(double dT)
   }
 }
 
-void Scene::render(SDL_Renderer* renderer) {
+void Scene::render(SDL_Renderer* renderer)
+{
   // print("Scene Render");
-
-  for (auto sys: renderSystems) {
+  
+  for (auto sys: renderSystems)
+  {
     sys->run(renderer);
   }
 }
 
-void Scene::processEvents(SDL_Event event) {
+void Scene::processEvents(SDL_Event event)
+{
   // print("Scene Events");
-
-  for (auto sys: eventSystems) {
+  
+  for (auto sys: eventSystems)
+  {
     sys->run(event);
   }
 }
+

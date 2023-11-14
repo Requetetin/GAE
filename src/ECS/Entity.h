@@ -15,6 +15,7 @@ class Entity {
 
     ~Entity() {
       // print("Entity Destroyed");
+      scene->r.destroy(handle);
     }
 
     template<typename T>
