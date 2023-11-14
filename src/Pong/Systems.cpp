@@ -131,12 +131,12 @@ void TilemapSetupSystem::run() {
             if (index != 0) {
                 b2BodyDef bodyDef;
                 bodyDef.type = b2_staticBody;
-                bodyDef.position.Set(x * 16, y * 16);
+                bodyDef.position.Set((x + 0.5) * 16, (y + 0.5) * 16);
 
                 b2Body* body = world->CreateBody(&bodyDef);
 
                 b2PolygonShape box;
-                box.SetAsBox(16, 16);
+                box.SetAsBox(8, 8);
 
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape = &box;
@@ -152,14 +152,13 @@ void TilemapSetupSystem::run() {
                     body,
                     x * 16,
                     y * 16,
-                    16,
-                    16,
+                    8,
+                    8,
                     SDL_Color{0, 255, 0}
                 );
             }
         }
     }
-    exit(1);
 }
 
 void TilemapRenderSystem::run(SDL_Renderer* renderer) {
@@ -273,7 +272,7 @@ void PhysicsSetupSystem::run() {
     if (scene->world == nullptr) {
       scene->world = new Entity(scene->r.create(), scene);
     }
-    b2Vec2 gravity(0.0f, 9.8f * PIXELS_PER_METER);  // 100 p/m    9.8 m/s * 10 p/m = 98 p/s;
+    b2Vec2 gravity(0.0f, 156.8f * PIXELS_PER_METER);  // 100 p/m    9.8 m/s * 10 p/m = 98 p/s;
     scene->world->addComponent<PhysicsComponent>(new b2World(gravity));
 };
 
@@ -362,21 +361,18 @@ void FixtureRenderSystem::run(SDL_Renderer* renderer) {
 void MovementInputSystem::run(SDL_Event event) {
     if (event.type == SDL_KEYDOWN) {
       // move
-      if (event.key.keysym.sym == SDLK_LEFT) {
-        print("Left!");
+      if (event.key.keysym.sym == SDLK_a) {
         moveCharacter(-1);
-      } else if (event.key.keysym.sym == SDLK_RIGHT) {
-        print("Right!");
+      } else if (event.key.keysym.sym == SDLK_d) {
         moveCharacter(1);
       } else if (event.key.keysym.sym == SDLK_SPACE) {
-        print("jump!");
         jumpCharacter();
       }
     } else if (event.type == SDL_KEYUP) {
       // stop movement
-      if (event.key.keysym.sym == SDLK_LEFT) {
+      if (event.key.keysym.sym == SDLK_a) {
         stopCharacter(-1);
-      } else if (event.key.keysym.sym == SDLK_RIGHT) {
+      } else if (event.key.keysym.sym == SDLK_d) {
         stopCharacter(1);
       }
     }
@@ -388,9 +384,9 @@ void MovementInputSystem::moveCharacter(int direction) {
 
     auto& playerSprite = scene->player->get<SpriteComponent>();
     if (direction == -1) {
-      playerSprite.yIndex = 0;
+      playerSprite.yIndex = 3;
     } else {
-      playerSprite.yIndex = 1;
+      playerSprite.yIndex = 2;
     }
 }
 
@@ -400,9 +396,9 @@ void MovementInputSystem::stopCharacter(int direction) {
 
     auto& playerSprite = scene->player->get<SpriteComponent>();
     if (direction == -1) {
-      playerSprite.yIndex = 2;
+      playerSprite.yIndex = 1;
     } else {
-      playerSprite.yIndex = 3;
+      playerSprite.yIndex = 0;
     }
 }
 
@@ -442,7 +438,8 @@ void CharacterSetupSystem::run() {
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &box;
     fixtureDef.density = 0.0000001f;
-    fixtureDef.friction = 0.0f;
+    fixtureDef.friction = 1.0f;
+    fixtureDef.restitution = 0.0f;
 
     body->CreateFixture(&fixtureDef);
 

@@ -112,8 +112,8 @@ class MovementInputSystem : public EventSystem {
     void run(SDL_Event event);
 
 private:
-  float hForceMagnitude = 1000.0f * PIXELS_PER_METER;
-  float vForceMagnitude = 10000.0f * PIXELS_PER_METER;
+  float hForceMagnitude = 100.0f * PIXELS_PER_METER;
+  float vForceMagnitude = 10.0f * PIXELS_PER_METER;
 
   void moveCharacter(int direction);
 
